@@ -2,9 +2,15 @@
 
 This is a React Native application that demonstrates the usage of [Redux Thunk](https://github.com/reduxjs/redux-thunk), a middleware for Redux that allows you to write action creators that return a function instead of an action.
 
-## Features
+## Simplified Version
 
-This app showcases various Redux Thunk patterns with:
+Due to compatibility issues with the Amazon Fire tablet, this demo has been simplified to use React's local state management instead of Redux Thunk. The simplified version demonstrates a basic counter implementation.
+
+![Redux Thunk Demo on Amazon Fire Tablet (Simplified Version)](./redux_thunk_simple.png)
+
+## Original Features (Full Version)
+
+The full version of this demo (which works on most devices but has compatibility issues with some Fire tablets) showcases various Redux Thunk patterns:
 
 1. **Counter Example**
    - Basic synchronous actions
@@ -31,24 +37,14 @@ This app showcases various Redux Thunk patterns with:
    - Retry logic for failed requests
    - Simulated weather data
 
-## Screenshot
+## Troubleshooting
 
-![Redux Thunk Demo on Amazon Fire Tablet](./redux_thunk_fixed.png)
+If you encounter issues running the app on your Amazon Fire tablet, try these solutions:
 
-## Implementation Details
-
-The app demonstrates several key aspects of Redux Thunk:
-
-- **Asynchronous Operations**: Handling simulated API calls and delayed actions
-- **Conditional Logic**: Dispatching actions based on current state
-- **Multiple Dispatches**: Dispatching multiple actions from a single thunk
-- **Error Handling**: Proper error handling in async operations
-- **Request Cancellation**: Cancelling in-flight requests
-- **Retry Mechanisms**: Implementing retry logic for failed requests
-
-## Offline Support
-
-This version of the app uses mock data instead of real API calls to ensure it works properly on devices with limited or no internet connectivity, such as Amazon Fire tablets. All API calls are simulated with setTimeout and local data.
+1. **Disable New Architecture**: Set `newArchEnabled: false` in app.json
+2. **Use Local State**: Simplify the app to use React's local state management instead of Redux
+3. **Mock API Calls**: Replace real API calls with mock data to avoid network issues
+4. **Reduce Bundle Size**: Simplify the app to reduce the JavaScript bundle size
 
 ## Redux Thunk Examples
 
