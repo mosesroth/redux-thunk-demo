@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 // Action Types
 export const FETCH_WEATHER_REQUEST = 'FETCH_WEATHER_REQUEST';
 export const FETCH_WEATHER_SUCCESS = 'FETCH_WEATHER_SUCCESS';
@@ -20,6 +18,17 @@ const fetchWeatherFailure = (error) => ({
   payload: error
 });
 
+// Generate mock weather data for a city
+const generateMockWeatherData = (city) => {
+  return {
+    city,
+    temperature: Math.floor(Math.random() * 30) + 5, // Random temp between 5-35°C
+    conditions: ['Sunny', 'Cloudy', 'Rainy', 'Snowy'][Math.floor(Math.random() * 4)],
+    humidity: Math.floor(Math.random() * 100),
+    timestamp: new Date().toISOString()
+  };
+};
+
 // Thunk Action Creator with cancellation
 let weatherRequestController = null;
 
@@ -32,30 +41,30 @@ export const fetchWeather = (city) => {
     
     // Create a new AbortController
     weatherRequestController = new AbortController();
-    const { signal } = weatherRequestController;
     
     dispatch(fetchWeatherRequest());
     
     try {
-      // Using OpenWeatherMap API mock endpoint
-      const response = await axios.get(
-        `https://jsonplaceholder.typicode.com/posts/1`,
-        { signal }
-      );
+      // Simulate API delay
+      await new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          resolve();
+        }, 1000);
+        
+        // If aborted, clear the timeout and reject
+        weatherRequestController.signal.addEventListener('abort', () => {
+          clearTimeout(timeoutId);
+          reject(new Error('Weather fetch was cancelled'));
+        });
+      });
       
-      // Simulate weather data transformation
-      const weatherData = {
-        city,
-        temperature: Math.floor(Math.random() * 30) + 5, // Random temp between 5-35°C
-        conditions: ['Sunny', 'Cloudy', 'Rainy', 'Snowy'][Math.floor(Math.random() * 4)],
-        humidity: Math.floor(Math.random() * 100),
-        timestamp: new Date().toISOString()
-      };
+      // Generate mock weather data
+      const weatherData = generateMockWeatherData(city);
       
       dispatch(fetchWeatherSuccess(weatherData));
       return weatherData;
     } catch (error) {
-      if (error.name === 'AbortError') {
+      if (error.name === 'AbortError' || error.message === 'Weather fetch was cancelled') {
         console.log('Weather fetch was cancelled');
       } else {
         dispatch(fetchWeatherFailure(error.message));
@@ -74,19 +83,16 @@ export const fetchWeatherWithRetry = (city, maxRetries = 3) => {
       try {
         dispatch(fetchWeatherRequest());
         
-        // Using OpenWeatherMap API mock endpoint
-        const response = await axios.get(
-          `https://jsonplaceholder.typicode.com/posts/1`
-        );
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 800));
         
-        // Simulate weather data
-        const weatherData = {
-          city,
-          temperature: Math.floor(Math.random() * 30) + 5,
-          conditions: ['Sunny', 'Cloudy', 'Rainy', 'Snowy'][Math.floor(Math.random() * 4)],
-          humidity: Math.floor(Math.random() * 100),
-          timestamp: new Date().toISOString()
-        };
+        // Randomly fail to demonstrate retry (1 in 3 chance)
+        if (Math.random() < 0.3 && retries < maxRetries) {
+          throw new Error('Simulated network error');
+        }
+        
+        // Generate mock weather data
+        const weatherData = generateMockWeatherData(city);
         
         dispatch(fetchWeatherSuccess(weatherData));
         return weatherData;

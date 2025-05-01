@@ -17,14 +17,14 @@ This app showcases various Redux Thunk patterns with:
    - Toggle and delete operations
 
 3. **Posts API Example**
-   - Fetching data from a real API
+   - Simulated API calls with mock data
    - Loading states and error handling
    - Fetching individual items by ID
 
 4. **Users API Example**
    - Using getState() to check existing data
-   - Multiple API calls in a single thunk
-   - Combining data from different endpoints
+   - Multiple simulated API calls in a single thunk
+   - Combining data from different sources
 
 5. **Weather API Example**
    - Request cancellation with AbortController
@@ -33,34 +33,41 @@ This app showcases various Redux Thunk patterns with:
 
 ## Screenshot
 
-![Redux Thunk Demo on Amazon Fire Tablet](./screenshot.png)
+![Redux Thunk Demo on Amazon Fire Tablet](./redux_thunk_fixed.png)
 
 ## Implementation Details
 
 The app demonstrates several key aspects of Redux Thunk:
 
-- **Asynchronous Operations**: Handling API calls and delayed actions
+- **Asynchronous Operations**: Handling simulated API calls and delayed actions
 - **Conditional Logic**: Dispatching actions based on current state
 - **Multiple Dispatches**: Dispatching multiple actions from a single thunk
 - **Error Handling**: Proper error handling in async operations
 - **Request Cancellation**: Cancelling in-flight requests
 - **Retry Mechanisms**: Implementing retry logic for failed requests
 
+## Offline Support
+
+This version of the app uses mock data instead of real API calls to ensure it works properly on devices with limited or no internet connectivity, such as Amazon Fire tablets. All API calls are simulated with setTimeout and local data.
+
 ## Redux Thunk Examples
 
 ```javascript
-// Basic thunk with async/await
+// Basic thunk with async/await and mock data
 export const fetchPosts = () => {
   return async (dispatch) => {
     dispatch({ type: FETCH_POSTS_REQUEST });
     
     try {
-      const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Use mock data instead of real API call
       dispatch({ 
         type: FETCH_POSTS_SUCCESS, 
-        payload: response.data 
+        payload: MOCK_POSTS 
       });
-      return response.data;
+      return MOCK_POSTS;
     } catch (error) {
       dispatch({ 
         type: FETCH_POSTS_FAILURE, 
